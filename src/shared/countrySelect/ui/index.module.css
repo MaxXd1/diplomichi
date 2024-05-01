@@ -1,0 +1,16 @@
+.select_text{
+    font-family: Inter;
+    font-size: 18px;
+    font-weight: 400;
+    margin: 10px 0;
+}
+.select{
+    width: 100%;
+    padding: 12px 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 15px;
+    color: #333;
+    background-color: #f2f2f2;
+}

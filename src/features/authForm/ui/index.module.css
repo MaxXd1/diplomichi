@@ -1,0 +1,53 @@
+.form_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 550px; 
+}
+
+.form_wrapper.login {
+  width: 330px !important; 
+  align-items: normal !important;
+}
+.form_container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .left_column {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin-right: 20px;
+  }
+  
+  .right_column {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin-left: 20px;
+  }
+  .login_container{
+    width: 100%;
+  }
+  .validate {
+    color: red;
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 15px;
+  }
+  .link{
+    font-family: Inter ;
+    font-weight: 400 ;
+    font-size: 16px ;
+    text-decoration: none !important;
+  }
+  .link_wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .link_password{
+    margin-top: 5px;
+    text-decoration: none !important;
+  }
