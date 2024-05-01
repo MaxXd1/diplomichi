@@ -1,9 +1,13 @@
 import style from './index.module.css';
 
-export const AuthButton = () => {
+type Props ={
+  text: string;
+}
+
+export const AuthButton: React.FC<Props> = ({text}) => {
   return (
     <button className={style.button}>
-        Войти
+        {text}
     </button>
   )
 }

@@ -13,22 +13,9 @@
     display: flex;
     justify-content: space-between;
   }
-  
-  .left_column {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    margin-right: 20px;
-  }
-  
-  .right_column {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    margin-left: 20px;
-  }
   .login_container{
     width: 100%;
+    margin-top: 40px;
   }
   .validate {
     color: red;
@@ -50,4 +37,5 @@
   .link_password{
     margin-top: 5px;
     text-decoration: none !important;
+    color: #78BCC4;
   }

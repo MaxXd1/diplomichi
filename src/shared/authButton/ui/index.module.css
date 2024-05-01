@@ -1,7 +1,7 @@
 button {
     border: 1px;
-    margin: 20px 0;
-    background-color: rgba(47, 84, 235);
+    margin-bottom: 20px;
+    background-color: #78BCC4;
     color: white;
     border-radius: 5px;
     width: 100%;
@@ -11,5 +11,5 @@ button {
     font-weight: bold;
   }
   button:active {
-     background-color: #0c0ca5; /*rgba(47, 84, 235, 1); */
+     background-color: #6da8c7; /*rgba(47, 84, 235, 1); */
   }
