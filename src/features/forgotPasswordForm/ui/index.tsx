@@ -14,7 +14,7 @@ export const ForgotPasswordForm = () => {
         placeholder="Email"
         setValue={setEmail}
             />
-    <AuthButton text="Получить код" />
+    <AuthButton text="Получить код" to="/login/forgot-password/get-code" />
    </form>
   )
 }

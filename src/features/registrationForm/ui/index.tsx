@@ -17,34 +17,36 @@ export const RegistrationForm = () => {
   const [emailValid, setEmailValid] = useState(true);
 
   return (
-        <div className={style.form_wrapper}>
-          <form className={style.form_container}>
+    <div className={style.form_wrapper}>
+      <form className={style.form_container}>
         <div className={style.left_column}>
           <Input
             type="First Name"
             value={firstName}
             placeholder="First Name"
-            setValue={setFirstName} />
+            setValue={setFirstName}
+          />
           <Input
             type="Second Name"
             value={secondName}
             placeholder="Second Name"
-            setValue={setSecondName} />
+            setValue={setSecondName}
+          />
           <Input
             type="Email"
             value={email}
             placeholder="Email"
             setValue={setEmail}
             setValid={setEmailValid}
-            isValidation />
-          {!emailValid && (
-            <div className={style.validate}>Не верный email</div>
-          )}
+            isValidation
+          />
+          {!emailValid && <div className={style.validate}>Не верный email</div>}
           <Input
             type="Company Name"
             value={companyName}
             placeholder="Company Name"
-            setValue={setCompanyName} />
+            setValue={setCompanyName}
+          />
         </div>
         <div className={style.right_column}>
           <RoleSelect />
@@ -55,7 +57,8 @@ export const RegistrationForm = () => {
             placeholder="Password"
             setValue={setPassword}
             setValid={setPasswordValid}
-            isValidation />
+            isValidation
+          />
           {!passwordValid && (
             <div className={style.validate}>Пароль не подходит</div>
           )}
@@ -63,21 +66,22 @@ export const RegistrationForm = () => {
             type="RepeatPassword"
             value={repeatPassword}
             placeholder="RepeatPassword"
-            setValue={setRepeatPassword} />
+            setValue={setRepeatPassword}
+          />
           {password === repeatPassword ? (
             ""
           ) : (
             <div className={style.validate}>Пароль не совпадает</div>
           )}
+        </div>
+      </form>
+      <AuthButton text="Войти" to="/main"/>
+      <div>
+        <span className={style.link}>У вас есть учетная запись? </span>
+        <Link to="/login" className={`${style.link} ${style.link_password}`}>
+          Войти
+        </Link>
       </div>
-    </form>
-    <AuthButton text="Войти" />
-    <span className={style.link}>
-              Есть аккаунт?{" "}
-              <Link to="/login" className={`${style.link} ${style.link_password}`}>
-                Войти
-              </Link>
-            </span>
     </div>
-  )
-}
+  );
+};
