@@ -1,3 +1,9 @@
 .wrapper{
     width: 350px;
 }
+.validate{
+    color: red;
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 15px;
+}

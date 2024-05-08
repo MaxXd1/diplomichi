@@ -1,20 +1,21 @@
-import { useNavigate } from 'react-router-dom';
+
 import style from './index.module.css';
 
 type Props ={
   text: string;
-  to: string;
+  refetch?:any;
 }
 
-export const AuthButton: React.FC<Props> = ({text,to}) => {
-  const navigate = useNavigate();
+export const AuthButton: React.FC<Props> = ({text,refetch}) => {
 
-  const handleButtonClick = () => {
-    navigate(to);
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault()
+
+   refetch();
   }
 
   return (
-    <button className={style.button} onClick={handleButtonClick}>
+    <button className={style.button} onClick={(e) =>{handleButtonClick(e)}}>
         {text}
     </button>
   )

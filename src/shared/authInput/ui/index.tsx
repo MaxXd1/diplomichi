@@ -15,7 +15,7 @@ export const Input: React.FC<Props> = ({ type,value,placeholder,setValue,setVali
   return (
     <div>
       <input
-        type={type === "Password" ? "password" : "text"}
+        type={type === "Password" || type==="RepeatPassword"  ? "password" : "text"}
         placeholder={placeholder}
         className={style.input}
         value={value}

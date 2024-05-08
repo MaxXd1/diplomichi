@@ -4,17 +4,45 @@ import { CountrySelect } from "@shared/countrySelect/ui";
 import { RoleSelect } from "@shared/roleSelect/ui";
 import { useState } from "react";
 import { AuthButton } from "@shared/authButton/ui";
-import { Link } from "react-router-dom";
+import { Link, } from "react-router-dom";
+import { useQuery } from "react-query";
+
 
 export const RegistrationForm = () => {
   const [firstName, setFirstName] = useState("");
-  const [secondName, setSecondName] = useState("");
-  const [email, setEmail] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [passwordValid, setPasswordValid] = useState(true);
   const [emailValid, setEmailValid] = useState(true);
+  const [role, setRole] = useState("");
+  const [country, setCountry]= useState("");
+
+  const Registrate =() => {
+    fetch("https://apiwithdb-u82g.onrender.com/register", {
+    method: "post",
+    headers: {
+    'Content-Type': 'application/json'
+    },
+ 
+    body: JSON.stringify({
+    firstName,
+    lastName,
+    login,
+    country,
+    role,
+    password,
+    })
+})
+  }
+  const { data , refetch } = useQuery('repoData',Registrate,{
+    refetchOnWindowFocus: false,
+    enabled: false
+  }
+  )
+  console.log(data);
 
   return (
     <div className={style.form_wrapper}>
@@ -28,15 +56,15 @@ export const RegistrationForm = () => {
           />
           <Input
             type="Second Name"
-            value={secondName}
+            value={lastName}
             placeholder="Second Name"
-            setValue={setSecondName}
+            setValue={setLastName}
           />
           <Input
             type="Email"
-            value={email}
+            value={login}
             placeholder="Email"
-            setValue={setEmail}
+            setValue={setLogin}
             setValid={setEmailValid}
             isValidation
           />
@@ -49,8 +77,8 @@ export const RegistrationForm = () => {
           />
         </div>
         <div className={style.right_column}>
-          <RoleSelect />
-          <CountrySelect />
+          <RoleSelect value={role} setValue={setRole}/>
+          <CountrySelect value={country} setValue={setCountry}/>
           <Input
             type="Password"
             value={password}
@@ -71,11 +99,11 @@ export const RegistrationForm = () => {
           {password === repeatPassword ? (
             ""
           ) : (
-            <div className={style.validate}>Пароль не совпадает</div>
+            <div className={style.validate}>Пароли не совпадают</div>
           )}
         </div>
       </form>
-      <AuthButton text="Войти" to="/main"/>
+      <AuthButton text="Войти" refetch={refetch}  />
       <div>
         <span className={style.link}>У вас есть учетная запись? </span>
         <Link to="/login" className={`${style.link} ${style.link_password}`}>
