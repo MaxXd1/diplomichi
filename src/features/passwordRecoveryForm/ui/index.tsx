@@ -1,61 +1,79 @@
 import { Input } from "@shared/authInput/ui";
-import { useEffect, useState } from "react";
 import style from "./index.module.css";
 import { AuthButton } from "@shared/authButton/ui";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { useAppDispatch, useAppSelector } from "@app/store/types";
+import { setUser, userSelector } from "@app/store/authSlice";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export const PasswordRecoveryForm = () => {
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
+  const dispath = useAppDispatch();
+
+  const ChangePass =(value: any)=>{
+    dispath(setUser(value));
+  }
+  const User = useAppSelector(userSelector);
+ 
 
   const email = sessionStorage.getItem("email");
   const navigate = useNavigate();
 
-  const PasswordRecovery = () => {
-    fetch(
-      `https://apiwithdb-u82g.onrender.com/forgotPassword/changePassword/${email}`,
+  const PasswordRecovery = async () => {
+    const { password,repeatPassword } = User;
+    try{
+      const response = await axios.post(`https://apiwithdb-u82g.onrender.com/forgotPassword/changePassword/${email}`,{
+        password,
+        repeatPassword,
+    }
+  );
+  return response.data;
+    } catch (e:any){
+      throw e;
+    }
+  };
+  
+  const handlePassRecovery = () => {
+    toast.promise(
+      PasswordRecovery(),
       {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
+        pending: "Смена пароля...",
+        success: {
+          render() {
+            navigate('/login'); 
+            return "Пароль сохранён.";
+          }
         },
-        body: JSON.stringify({
-          password,
-          repeatPassword,
-        }),
+        error: {
+          render({ data }) {
+            const errorResponse = data as { response: { data: { error: string } } };
+            return errorResponse.response.data.error || "Произошла ошибка при сохранении пароля.";
+          }
+        }
       }
     );
-  };
-  const { refetch, isSuccess } = useQuery("changePassword", PasswordRecovery, {
-    refetchOnWindowFocus: false,
-    enabled: false,
-  });
-
-  useEffect(() => {
-    if (isSuccess) {
-      console.log(3);
-      navigate("/login");
-    }
-  }, [isSuccess]);
+  }
 
   return (
     <div>
       <form className={style.wrapper}>
         <Input
           type="password"
-          value={password}
+          value={User.password}
           placeholder="Новый пароль"
-          setValue={setPassword}
+          setValue={(newValue) =>
+            ChangePass({ ...User, password: newValue })}
         />
         <Input
           type="password"
-          value={repeatPassword}
+          value={User.repeatPassword}
           placeholder="Подтвердите пароль"
-          setValue={setRepeatPassword}
+          setValue={(newValue) =>
+            ChangePass({ ...User, repeatPassword: newValue })}
         />
       </form>
-      <AuthButton text="Отправить" refetch={refetch} />
+      <AuthButton text="Отправить" refetch={handlePassRecovery} />
     </div>
   );
 };

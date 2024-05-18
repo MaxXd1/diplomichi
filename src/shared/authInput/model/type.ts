@@ -1,8 +1,8 @@
-export type Props = {
+export type Props<T> = {
     type: string;
     value: string;
     placeholder: string;
     isValidation?:boolean;
-    setValue:React.Dispatch<React.SetStateAction<string>>;
+    setValue:(data:T)=> void;
     setValid?:React.Dispatch<React.SetStateAction<boolean>>;
 }

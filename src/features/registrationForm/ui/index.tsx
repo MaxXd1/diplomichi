@@ -1,48 +1,85 @@
 import { Input } from "@shared/authInput/ui";
 import style from "./index.module.css";
 import { CountrySelect } from "@shared/countrySelect/ui";
-import { RoleSelect } from "@shared/roleSelect/ui";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthButton } from "@shared/authButton/ui";
-import { Link, } from "react-router-dom";
-import { useQuery } from "react-query";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@app/store/types";
+import {
+  MessageSelector,
+  StatusCodeSelector,
+  setError,
+  setUser,
+  userSelector,
+} from "@app/store/authSlice";
+import axios from "axios";
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 
 export const RegistrationForm = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
   const [passwordValid, setPasswordValid] = useState(true);
   const [emailValid, setEmailValid] = useState(true);
-  const [role, setRole] = useState("");
-  const [country, setCountry]= useState("");
+  const statusCode = useAppSelector(StatusCodeSelector);
+  const errorMessage = useAppSelector(MessageSelector);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const updateUser = (value: any) => {
+    dispatch(setUser(value));
+  };
+  const User = useAppSelector(userSelector);
 
-  const Registrate =() => {
-    fetch("https://apiwithdb-u82g.onrender.com/register", {
-    method: "post",
-    headers: {
-    'Content-Type': 'application/json'
-    },
- 
-    body: JSON.stringify({
-    firstName,
-    lastName,
-    login,
-    country,
-    role,
-    password,
-    })
-})
-  }
-  const { data , refetch } = useQuery('repoData',Registrate,{
-    refetchOnWindowFocus: false,
-    enabled: false
-  }
-  )
-  console.log(data);
+  const registrate = async () => {
+    const { repeatPassword, ...usefulData } = User;
+    try {
+      const response = await axios.post(
+        "https://apiwithdb-u82g.onrender.com/register",
+        {
+          ...usefulData,
+        }
+      );
+      if (response.data.status) {
+        dispatch(setError(response.data));
+      }
+      return response.data;
+    } catch (e: any) {
+      dispatch(setError({
+        statusCode: e.response.data.status,
+        message: e.response.data.error,
+      }));
+      throw e; 
+    }
+  };
+
+  const handleRegistration = () => {
+    toast.promise(
+      registrate(),
+      {
+        pending: "Регистрация...",
+        success: {
+          render() {
+            navigate('/login');
+            return "Вы успешно зарегистрированы!";
+          }
+        },
+        error: {
+          render({ data }) {
+            const errorResponse = data as { response: { data: { error: string } } };
+            return errorResponse.response.data.error || "Произошла ошибка при регистрации.";
+          }
+        }
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (statusCode) {
+      toast.error(`${errorMessage}`);
+    }
+    dispatch(setError({
+      statusCode: null,
+      message: "",
+    }));
+  }, [statusCode, errorMessage]);
 
   return (
     <div className={style.form_wrapper}>
@@ -50,60 +87,64 @@ export const RegistrationForm = () => {
         <div className={style.left_column}>
           <Input
             type="First Name"
-            value={firstName}
+            value={User.firstName}
             placeholder="First Name"
-            setValue={setFirstName}
+            setValue={(newValue) =>
+              updateUser({ ...User, firstName: newValue })
+            }
           />
           <Input
             type="Second Name"
-            value={lastName}
+            value={User.lastName}
             placeholder="Second Name"
-            setValue={setLastName}
+            setValue={(newValue) =>
+              updateUser({ ...User, lastName: newValue })
+            }
           />
           <Input
-            type="Email"
-            value={login}
+            type="login"
+            value={User.login}
             placeholder="Email"
-            setValue={setLogin}
+            setValue={(newValue) => updateUser({ ...User, login: newValue })}
             setValid={setEmailValid}
             isValidation
           />
           {!emailValid && <div className={style.validate}>Не верный email</div>}
-          <Input
-            type="Company Name"
-            value={companyName}
-            placeholder="Company Name"
-            setValue={setCompanyName}
-          />
         </div>
         <div className={style.right_column}>
-          <RoleSelect value={role} setValue={setRole}/>
-          <CountrySelect value={country} setValue={setCountry}/>
+          <CountrySelect
+            value={User.country}
+            setValue={(newValue) => updateUser({ ...User, country: newValue })}
+          />
           <Input
             type="Password"
-            value={password}
+            value={User.password}
             placeholder="Password"
-            setValue={setPassword}
+            setValue={(newValue) =>
+              updateUser({ ...User, password: newValue })
+            }
             setValid={setPasswordValid}
             isValidation
           />
           {!passwordValid && (
-            <div className={style.validate}>Пароль не подходит</div>
+            <div className={style.validate}> Пароль должен быть не менее 8 символов, содержать хотя бы одну заглавную букву и одну цифру</div>
           )}
           <Input
             type="RepeatPassword"
-            value={repeatPassword}
+            value={User.repeatPassword}
             placeholder="RepeatPassword"
-            setValue={setRepeatPassword}
+            setValue={(newValue) =>
+              updateUser({ ...User, repeatPassword: newValue })
+            }
           />
-          {password === repeatPassword ? (
+          {User.password === User.repeatPassword ? (
             ""
           ) : (
             <div className={style.validate}>Пароли не совпадают</div>
           )}
         </div>
       </form>
-      <AuthButton text="Войти" refetch={refetch}  />
+      <AuthButton text="Войти" refetch={handleRegistration} />
       <div>
         <span className={style.link}>У вас есть учетная запись? </span>
         <Link to="/login" className={`${style.link} ${style.link_password}`}>

@@ -1,4 +1,4 @@
-button {
+.button {
     border: 1px;
     margin-bottom: 20px;
     background-color: #78BCC4;
@@ -10,6 +10,6 @@ button {
     font-size: 16px;
     font-weight: bold;
   }
-  button:active {
+  .button:active {
      background-color: #6da8c7; /*rgba(47, 84, 235, 1); */
   }

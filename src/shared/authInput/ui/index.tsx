@@ -1,25 +1,25 @@
 import { Props } from "../model/type";
 import style from "./index.module.css";
 import { validate } from "@shared/util/validation";
+import React from "react";
 
-export const Input: React.FC<Props> = ({ type,value,placeholder,setValue,setValid,isValidation }) => {
-
-  const handleChange=((e:React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue(value)
-    if(isValidation){
-      validate(value, type, setValid);
+export const Input = ({ type, value, placeholder, setValue, setValid, isValidation }: Props<string>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    if (isValidation) {
+      validate(newValue, type, setValid);
     }
-  })
+  };
 
   return (
     <div>
       <input
-        type={type === "Password" || type==="RepeatPassword"  ? "password" : "text"}
+        type={type === "Password" || type === "RepeatPassword" ? "password" : (type === "date" ? "date" : "text")}
         placeholder={placeholder}
         className={style.input}
         value={value}
-        onChange={(e) => handleChange(e)}
+        onChange={handleChange}
       />
     </div>
   );

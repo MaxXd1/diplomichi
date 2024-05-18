@@ -1,55 +1,69 @@
 import { AuthButton } from "@shared/authButton/ui";
 import { Input } from "@shared/authInput/ui";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import style from "./index.module.css";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { useAppDispatch, useAppSelector } from "@app/store/types";
+import { setUser, userSelector } from "@app/store/authSlice";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export const ForgotPasswordForm = () => {
-  const [email, setEmail] = useState("");
+  const dispatch = useAppDispatch();
   const [emailValid, setEmailValid] = useState(true);
   const navigate = useNavigate();
 
-  const ForgotPass = () => {
-      fetch(
-        `https://apiwithdb-u82g.onrender.com/forgotPassword/verifyMail/${email}`,
-        {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-          }),
-        }
-      );
+  const User = useAppSelector(userSelector);
+  
+  const ForgotPassLogin = (value: any) => {
+    dispatch(setUser(value));
   };
-  const { refetch, isSuccess } = useQuery("verifyMail", ForgotPass, {
-    refetchOnWindowFocus: false,
-    enabled: false,
-  });
-
-  useEffect(() => {
-    console.log(isSuccess);
-    if (isSuccess) {
-      console.log(1);
-      sessionStorage.setItem("email", email);
-      navigate("/login/forgot-password/get-code");
+  
+  const ForgotPass = async () => {
+    const { login } = User; // Ensure to use `login` from User
+    try {
+      const response = await axios.post(`https://apiwithdb-u82g.onrender.com/forgotPassword/verifyMail/${login}`);
+      return response.data;
+    } catch (e: any) {
+      throw e; 
     }
-  }, [isSuccess]);
+  };
+  
+  const handleForgotPassword = () => {
+    toast.promise(
+      ForgotPass(),
+      {
+        pending: "Отправка запроса...",
+        success: {
+          render() {
+            sessionStorage.setItem("email", User.login); // Сохранение email в sessionStorage
+            navigate('/login/forgot-password/get-code'); // Redirect to the appropriate route
+            return "Код выслан на ваш email.";
+          }
+        },
+        error: {
+          render({ data }) {
+            const errorResponse = data as { response: { data: { error: string } } };
+            return errorResponse.response.data.error || "Произошла ошибка при отправке запроса.";
+          }
+        }
+      }
+    );
+  };
 
   return (
     <form className={style.wrapper}>
       <Input
         type="Email"
-        value={email}
+        value={User.login}
         placeholder="Email"
-        setValue={setEmail}
+        setValue={(newValue) => ForgotPassLogin({ ...User, login: newValue })}
         setValid={setEmailValid}
         isValidation
       />
-      {!emailValid && <div className={style.validate}>Не верный email</div>}
-      <AuthButton text="Получить код" refetch={refetch} />
+      {!emailValid && <div className={style.validate}>Неверный email</div>}
+      <AuthButton text="Получить код" refetch={handleForgotPassword} />
     </form>
   );
 };

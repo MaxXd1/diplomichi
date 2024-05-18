@@ -1,38 +1,46 @@
 import { AuthButton } from "@shared/authButton/ui";
 import { Input } from "@shared/authInput/ui";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import style from "./index.module.css";
-import { useQuery } from "react-query";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export const GetCodeForm = () => {
   const [otp, setOtp] = useState("");
   const email = sessionStorage.getItem("email");
   const navigate = useNavigate();
   
-  const GetCode = () => {
-    fetch(
-      `https://apiwithdb-u82g.onrender.com/forgotPassword/verifyOtp/${otp}/${email}`,
+  const GetCode = async () => {
+    try {
+      const response = await axios.post(`https://apiwithdb-u82g.onrender.com/forgotPassword/verifyOtp/${otp}/${email}`, {});
+      return response.data;
+    } catch (e: any) {
+      throw e; 
+    }
+  };
+
+  const handleGetCode = () => {
+    toast.promise(
+      GetCode(),
       {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
+        pending: "Проверка кода...",
+        success: {
+          render() {
+            navigate('/login/forgot-password/recover-pass'); 
+            return "Код успешно проверен.";
+          }
         },
+        error: {
+          render({ data }) {
+            const errorResponse = data as { response: { data: { error: string } } };
+            return errorResponse.response.data.error || "Произошла ошибка при проверке кода.";
+          }
+        }
       }
     );
   };
-
-  const { refetch, isSuccess } = useQuery("verifyOtp", GetCode, {
-    refetchOnWindowFocus: false,
-    enabled: false,
-  });
-
-  useEffect(() => {
-    if (isSuccess) {
-      console.log(2);
-      navigate("/login/forgot-password/recover-pass");
-    }
-  }, [isSuccess]);
 
   return (
     <div>
@@ -44,7 +52,7 @@ export const GetCodeForm = () => {
           setValue={setOtp}
         />
       </form>
-      <AuthButton text="Отправить" refetch={refetch} />
+      <AuthButton text="Отправить" refetch={handleGetCode} />
     </div>
   );
 };

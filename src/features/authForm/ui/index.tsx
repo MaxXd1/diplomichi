@@ -1,39 +1,77 @@
 import { AuthButton } from "@shared/authButton/ui";
 import { Input } from "@shared/authInput/ui";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import style from "./index.module.css";
-import { Link } from "react-router-dom";
-import { useQuery } from "react-query";
-// type Privet ={
-//   token: string;
-// }
-export const AuthForm = () => {
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@app/store/types";
+import { setError, setUser, userSelector, MessageSelector, StatusCodeSelector } from "@app/store/authSlice";
+import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 
-  const Login =() => {
-   fetch("https://apiwithdb-u82g.onrender.com/login", {
-      method: "post",
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-          login,
-          password,
-      })
-  });
-}
-  const { data , refetch } = useQuery('repoData',Login,{
-    refetchOnWindowFocus: false,
-    enabled: false
+export const AuthForm = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const User = useAppSelector(userSelector);
+  const errorMessage = useAppSelector(MessageSelector);
+  const statusCode = useAppSelector(StatusCodeSelector);
+
+  const LoginUser = (value: any) => {
+    dispatch(setUser(value));
   }
-  )
-  console.log(data);
-  useEffect(() =>{
-    if (data){
-      localStorage.setItem('token',data?.token)
+
+  const Login = async () => {
+    const { login, password } = User;
+    try {
+      const response = await axios.post("https://apiwithdb-u82g.onrender.com/login", {
+        login,
+        password,
+      });
+      if (response.data.status) {
+        dispatch(setError(response.data));
+      }
+      return response.data;
+    } catch (e: any) {
+      dispatch(setError({
+        statusCode: e.response.data.status,
+        message: e.response.data.error,
+      }));
+      throw e; // Ensure the error is propagated for toast.promise
     }
-  },[data]);
+  };
+
+  const handleLogin = () => {
+    toast.promise(
+      Login(),
+      {
+        pending: "Вход...",
+        success: {
+          render({ data }) {
+            const token = data.token; // Assuming the token is returned in response.data.token
+            localStorage.setItem('token', token);
+            navigate('/main'); // Change to your desired route after login
+            return "Вы успешно вошли в систему!";
+          }
+        },
+        error: {
+          render({ data }) {
+            const errorResponse = data as { response: { data: { error: string } } };
+            return errorResponse.response.data.error || "Произошла ошибка при входе.";
+          }
+        }
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (statusCode) {
+      toast.error(`${errorMessage}`);
+    }
+    dispatch(setError({
+      statusCode: null,
+      message: "",
+    }));
+  }, [statusCode, errorMessage]);
 
   return (
     <div className={`${style.form_wrapper} ${style.login}`}>
@@ -41,19 +79,19 @@ export const AuthForm = () => {
         <div className={style.login_container}>
           <Input
             type="Email"
-            value={login}
+            value={User.login}
             placeholder="Email"
-            setValue={setLogin}
+            setValue={(newValue) => LoginUser({ ...User, login: newValue })}
           />
           <Input
             type="Password"
-            value={password}
+            value={User.password}
             placeholder="Password"
-            setValue={setPassword}
+            setValue={(newValue) => LoginUser({ ...User, password: newValue })}
           />
         </div>
       </form>
-      <AuthButton text="Войти" refetch={refetch}/>
+      <AuthButton text="Войти" refetch={handleLogin} />
       <div className={style.link_wrap}>
         <span className={style.link}>
           Нет аккаунта{" "}

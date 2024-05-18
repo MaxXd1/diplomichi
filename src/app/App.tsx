@@ -6,13 +6,10 @@ import { ForgotPassword } from "@pages/forgotPassword/ui";
 import { Registration } from "@pages/registration/ui";
 import { GetCode } from "@pages/getCode/ui";
 import { PasswordRecovery } from "@pages/passwordRecovery/ui";
-import { QueryClient, QueryClientProvider} from "react-query";
-
-const queryClient = new QueryClient();
+import {  CreateCompany } from "@pages/createCompany/ui";
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
       <Routes>
         <Route path="/registrate" element={<Registration />} />
         <Route path="/login" element={<Login />} />
@@ -22,9 +19,9 @@ function App() {
           path="/login/forgot-password/recover-pass"
           element={<PasswordRecovery />}
         />
+         <Route path="/createCompany" element={<CreateCompany/>} />
         <Route path="/main" element={<Main />} />
       </Routes>
-    </QueryClientProvider>
   );
 }
 
