@@ -21,7 +21,7 @@ export const ForgotPasswordForm = () => {
   };
   
   const ForgotPass = async () => {
-    const { login } = User; // Ensure to use `login` from User
+    const { login } = User; 
     try {
       const response = await axios.post(`https://apiwithdb-u82g.onrender.com/forgotPassword/verifyMail/${login}`);
       return response.data;
@@ -37,8 +37,8 @@ export const ForgotPasswordForm = () => {
         pending: "Отправка запроса...",
         success: {
           render() {
-            sessionStorage.setItem("email", User.login); // Сохранение email в sessionStorage
-            navigate('/login/forgot-password/get-code'); // Redirect to the appropriate route
+            sessionStorage.setItem("email", User.login); 
+            navigate('/login/forgot-password/get-code'); 
             return "Код выслан на ваш email.";
           }
         },

@@ -1,7 +1,7 @@
 import { Input } from "@shared/authInput/ui";
 import style from "./index.module.css";
 import { CountrySelect } from "@shared/countrySelect/ui";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthButton } from "@shared/authButton/ui";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@app/store/types";
@@ -17,8 +17,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "react-toastify";
 
 export const RegistrationForm = () => {
-  const [passwordValid, setPasswordValid] = useState(true);
-  const [emailValid, setEmailValid] = useState(true);
+  const [passwordValid, setPasswordValid] = useState<boolean>(true);
+  const [emailValid, setEmailValid] = useState<boolean>(true);
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const statusCode = useAppSelector(StatusCodeSelector);
   const errorMessage = useAppSelector(MessageSelector);
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ export const RegistrationForm = () => {
     toast.promise(
       registrate(),
       {
-        pending: "Регистрация...",
+        pending: "Запрос обрабатывается",
         success: {
           render() {
             navigate('/login');
@@ -72,14 +73,11 @@ export const RegistrationForm = () => {
   };
 
   useEffect(() => {
-    if (statusCode) {
-      toast.error(`${errorMessage}`);
-    }
-    dispatch(setError({
-      statusCode: null,
-      message: "",
-    }));
-  }, [statusCode, errorMessage]);
+    const isAllFieldsFilled = !!User.firstName && !!User.lastName && !!User.login && !!User.password && !!User.repeatPassword && !!User.country;
+    const isPasswordMatch = User.password === User.repeatPassword;
+    const formValid = isAllFieldsFilled && emailValid && passwordValid && isPasswordMatch;
+    setIsFormValid(formValid);
+  }, [User, emailValid, passwordValid]);
 
   return (
     <div className={style.form_wrapper}>
@@ -127,7 +125,7 @@ export const RegistrationForm = () => {
             isValidation
           />
           {!passwordValid && (
-            <div className={style.validate}> Пароль должен быть не менее 8 символов, содержать хотя бы одну заглавную букву и одну цифру</div>
+            <div className={style.validate}>Пароль: минимум 8 символов, заглавная буква и цифра.</div>
           )}
           <Input
             type="RepeatPassword"
@@ -144,7 +142,7 @@ export const RegistrationForm = () => {
           )}
         </div>
       </form>
-      <AuthButton text="Войти" refetch={handleRegistration} />
+      <AuthButton text="Войти" refetch={handleRegistration} disabled={!isFormValid} />
       <div>
         <span className={style.link}>У вас есть учетная запись? </span>
         <Link to="/login" className={`${style.link} ${style.link_password}`}>

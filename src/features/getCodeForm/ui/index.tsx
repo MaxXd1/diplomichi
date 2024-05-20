@@ -9,10 +9,10 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export const GetCodeForm = () => {
   const [otp, setOtp] = useState("");
-  const email = sessionStorage.getItem("email");
   const navigate = useNavigate();
   
   const GetCode = async () => {
+    const email = sessionStorage.getItem("email");
     try {
       const response = await axios.post(`https://apiwithdb-u82g.onrender.com/forgotPassword/verifyOtp/${otp}/${email}`, {});
       return response.data;

@@ -36,7 +36,7 @@ export const AuthForm = () => {
         statusCode: e.response.data.status,
         message: e.response.data.error,
       }));
-      throw e; // Ensure the error is propagated for toast.promise
+      throw e; 
     }
   };
 
@@ -47,9 +47,9 @@ export const AuthForm = () => {
         pending: "Вход...",
         success: {
           render({ data }) {
-            const token = data.token; // Assuming the token is returned in response.data.token
+            const token = data.token; 
             localStorage.setItem('token', token);
-            navigate('/main'); // Change to your desired route after login
+            navigate('/createCompany'); 
             return "Вы успешно вошли в систему!";
           }
         },

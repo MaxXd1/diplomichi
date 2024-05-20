@@ -1,14 +1,10 @@
 import { NavBar } from "@widgets/navBar/ui"
 
 export const Main = () => {
+  // useAuth();
   return (
-    <body>
-      <header>
-       <NavBar />
-      </header>
-      <section>
-
-      </section>
-    </body>
+    <>
+    <NavBar/>
+    </>
   )
 }

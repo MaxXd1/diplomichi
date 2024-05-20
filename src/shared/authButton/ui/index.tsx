@@ -1,22 +1,27 @@
-
 import style from './index.module.css';
 
-type Props ={
+type Props = {
   text: string;
-  refetch?:any;
+  refetch?: any;
+  disabled?: boolean;
 }
 
-export const AuthButton: React.FC<Props> = ({text,refetch}) => {
+export const AuthButton: React.FC<Props> = ({ text, refetch, disabled }) => {
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault()
-
-   refetch();
+    e.preventDefault();
+    if (!disabled && refetch) {
+      refetch();
+    }
   }
 
   return (
-    <button className={style.button} onClick={(e) =>{handleButtonClick(e)}}>
-        {text}
+    <button
+      className={style.button}
+      onClick={handleButtonClick}
+      disabled={disabled}
+    >
+      {text}
     </button>
-  )
+  );
 }
