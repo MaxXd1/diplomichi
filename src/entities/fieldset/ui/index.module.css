@@ -1,0 +1,21 @@
+.legend {
+    font-family: Inter;
+    font-size: 17px ;
+    font-weight: bold;
+    background-color: rgb(7,43,71);
+    color: #fff;
+    padding: 3px 6px;
+}
+fieldset{
+    padding: 20px;
+    border-width: 2px;
+    border-style: groove;
+    border-color:rgb(7,43,71);
+    border-image: initial;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: white;
+}
+.fieldset_input{
+    margin: 0.4rem;
+}

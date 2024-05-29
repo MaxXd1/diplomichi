@@ -27,6 +27,11 @@ export const AuthForm = () => {
         login,
         password,
       });
+      console.log(response.data);
+      if (!response.data.status) {
+        dispatch(setUser(response.data));
+      } 
+
       if (response.data.status) {
         dispatch(setError(response.data));
       }

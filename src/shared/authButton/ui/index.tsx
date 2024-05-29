@@ -4,9 +4,10 @@ type Props = {
   text: string;
   refetch?: any;
   disabled?: boolean;
+  color?: string;
 }
 
-export const AuthButton: React.FC<Props> = ({ text, refetch, disabled }) => {
+export const AuthButton: React.FC<Props> = ({ text, refetch, disabled, color }) => {
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -20,6 +21,7 @@ export const AuthButton: React.FC<Props> = ({ text, refetch, disabled }) => {
       className={style.button}
       onClick={handleButtonClick}
       disabled={disabled}
+      style={{ backgroundColor: color }}
     >
       {text}
     </button>

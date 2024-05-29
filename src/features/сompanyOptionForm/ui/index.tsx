@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "@shared/hooks/useAuth";
 
 export const CreateCompanyForm = () => {
-  useAuth();
+  // useAuth();
   const [compName, setCompName] = useState("");
   const [compAddress, setCompAddress] = useState("");
   const [compLegalAddress, setCompLegalAddress] = useState("");

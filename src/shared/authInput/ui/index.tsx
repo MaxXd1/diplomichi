@@ -15,7 +15,15 @@ export const Input = ({ type, value, placeholder, setValue, setValid, isValidati
   return (
     <div>
       <input
-        type={type === "Password" || type === "RepeatPassword" ? "password" : (type === "date" ? "date" : "text")}
+        type={
+          type === "Password" || type === "RepeatPassword"
+            ? "password"
+            : type === "date"
+            ? "date"
+            : type === "file"
+            ? "file"
+            : "text"
+        }
         placeholder={placeholder}
         className={style.input}
         value={value}

@@ -1,0 +1,35 @@
+.title {
+    font-family: Inter;
+    font-size: 26px;
+    font-weight: bold;
+    line-height: 20.8px;
+    text-align: center;
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: white;
+    color: rgb(7, 43, 71);
+}
+
+.list {
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid;
+    max-height: 200px;
+    margin-top: 5px;
+}
+
+.list_item {
+    cursor: pointer;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+.list_item:hover {
+    background-color: #f0f0f0;
+}
+
+.selected {
+    background-color: #d0e8ff;
+}

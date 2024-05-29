@@ -8,6 +8,8 @@ type TUser = {
     password: string;
     repeatPassword: string;
     country: string;
+    role: string;
+    employeePhoto: string,
 }
 
 type TError = {
@@ -28,6 +30,8 @@ const initialState: TAuthState = {
         password: "",
         repeatPassword: "",
         country: "",
+        role: "",
+        employeePhoto: "",
     },
     errors: {
         statusCode: 0,

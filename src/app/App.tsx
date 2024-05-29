@@ -19,7 +19,7 @@ function App() {
           path="/login/forgot-password/recover-pass"
           element={<PasswordRecovery />}
         />
-         <Route path="/createCompany" element={<CreateCompany/>} />
+        <Route path="/createCompany" element={<CreateCompany/>} />
         <Route path="/main" element={<Main />} />
       </Routes>
   );

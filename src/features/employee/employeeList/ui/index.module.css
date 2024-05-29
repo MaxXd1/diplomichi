@@ -1,0 +1,11 @@
+.title {
+    font-family: Inter, sans-serif;
+    font-size: 26px;
+    font-weight: bold;
+    line-height: 1.2;
+    text-align: center;
+    padding: 15px;
+    color: rgb(7, 43, 71);
+    margin-bottom: 16px;
+}
+

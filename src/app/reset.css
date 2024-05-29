@@ -16,6 +16,7 @@ time, mark, audio, video {
 	border: 0;
 	font-size: 100%;
 	font: inherit;
+	box-sizing: border-box;
 	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
@@ -41,3 +42,10 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+ /* body {
+    margin: 0;
+    padding-top: 25px;
+
+} */
+
+
