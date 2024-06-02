@@ -1,3 +1,4 @@
+// DepartmentWrapper.tsx
 import { FieldSet } from "@entities/fieldset/ui";
 import style from "./index.module.css";
 import { useState } from "react";
@@ -10,16 +11,18 @@ import { DepartmentInfo } from "@features/department/departmentInfo/ui";
 import { EmployeeList } from "@features/employee/employeeList/ui";
 import { useAppDispatch, useAppSelector } from "@app/store/types";
 import { selectDate, setDate } from "@app/store/dateSlice";
+import { userRole } from "@app/store/authSlice";
 
 export const DepartmentWrapper = () => {
-  // const [date, setDate] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
+  const [shouldRefetchDepartments, setShouldRefetchDepartments] = useState(false);
+  const role = useAppSelector(userRole);
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
   const updateDate = (value: string) => {
     dispatch(setDate(value));
-  }
+  };
 
   const handleAddDepartmentClick = () => {
     setIsAddModalOpen(true);
@@ -37,6 +40,14 @@ export const DepartmentWrapper = () => {
     setIsDeleteModalOpen(false); 
   };
 
+  const handleDepartmentAdded = () => {
+    setShouldRefetchDepartments(true);
+  };
+
+  const handleDepartmentsFetched = () => {
+    setShouldRefetchDepartments(false);
+  };
+
   return (
     <section className={style.wrapper}>
       <div className={style.div1}>
@@ -47,23 +58,28 @@ export const DepartmentWrapper = () => {
           placeholder="Выберите дату"
           setValue={(newValue) => updateDate(newValue)}
         />
-        <div>
-          <AuthButton
-            color="rgb(7,43,71)"
-            text="Добавить отдел"
-            refetch={handleAddDepartmentClick}
-          />
-          <AuthButton
-            color="#DC143C"
-            text="Удалить отдел"
-            refetch={handleDeleteDepartmentClick}
-          />
-        </div>
-        <DepartmentList />
+        {role === 'ADMIN' && (
+          <div>
+            <AuthButton
+              color="rgb(7,43,71)"
+              text="Добавить отдел"
+              refetch={handleAddDepartmentClick}
+            />
+            <AuthButton
+              color="#DC143C"
+              text="Удалить отдел"
+              refetch={handleDeleteDepartmentClick}
+            />
+          </div>
+        )}
+        <DepartmentList
+          shouldRefetch={shouldRefetchDepartments}
+          onDepartmentsFetched={handleDepartmentsFetched}
+        />
       </div>
       <div className={style.content}>
         <div className={style.div2}>
-        <DepartmentInfo/>
+          <DepartmentInfo/>
         </div>
         <div className={style.div3}>
           <EmployeeList/>
@@ -72,6 +88,7 @@ export const DepartmentWrapper = () => {
       <AddDepartmentModal
         isOpen={isAddModalOpen}
         onClose={handleCloseAddModal}
+        onDepartmentAdded={handleDepartmentAdded}
       />
       <DeleteDepartmentModal
         isOpen={isDeleteModalOpen}

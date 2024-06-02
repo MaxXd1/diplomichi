@@ -4,10 +4,12 @@ import { useEffect } from "react";
 import style from "./index.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@app/store/types";
-import { setError, setUser, userSelector, MessageSelector, StatusCodeSelector } from "@app/store/authSlice";
+import { setError, setUser, userSelector, MessageSelector, StatusCodeSelector, userRole } from "@app/store/authSlice";
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "react-toastify";
+import { getCompany } from "@pages/main/models/getCompany";
+import { companyInfoSelector, setCompanyInfo } from "@app/store/companyInfo";
 
 export const AuthForm = () => {
   const dispatch = useAppDispatch();
@@ -15,11 +17,16 @@ export const AuthForm = () => {
   const User = useAppSelector(userSelector);
   const errorMessage = useAppSelector(MessageSelector);
   const statusCode = useAppSelector(StatusCodeSelector);
-
+  const role = useAppSelector(userRole);
+  const company = useAppSelector(companyInfoSelector);
+  const companyId = company.id;
   const LoginUser = (value: any) => {
     dispatch(setUser(value));
   }
 
+
+
+  
   const Login = async () => {
     const { login, password } = User;
     try {
@@ -52,9 +59,10 @@ export const AuthForm = () => {
         pending: "Вход...",
         success: {
           render({ data }) {
+            getCompany(dispatch, setCompanyInfo,role);
             const token = data.token; 
             localStorage.setItem('token', token);
-            navigate('/createCompany'); 
+            {role === "USER" || companyId !== 0 ? navigate('/createCompany') : navigate('/main')}
             return "Вы успешно вошли в систему!";
           }
         },

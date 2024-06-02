@@ -32,7 +32,7 @@ export const FieldSet = () => {
           onChange={handleOptionChange}
         />
         <label>За день</label><br />
-        <input
+        {/* <input
           type="radio"
           name="info"
           value="За месяц"
@@ -40,7 +40,7 @@ export const FieldSet = () => {
           checked={selectedOption === 'За месяц'}
           onChange={handleOptionChange}
         />
-        <label>За месяц</label><br/>
+        <label>За месяц</label><br/> */}
       </fieldset>
     </form>
   );

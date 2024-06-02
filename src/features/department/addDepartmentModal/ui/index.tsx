@@ -1,3 +1,4 @@
+// AddDepartmentModal.tsx
 import { useState } from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
 import axios from "axios";
@@ -10,7 +11,7 @@ import { useAppSelector } from "@app/store/types";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  // onAddDepartment: (name: string) => void;
+  onDepartmentAdded: () => void; // Новый пропс
 };
 
 const modalStyle = {
@@ -24,18 +25,17 @@ const modalStyle = {
   p: 4,
 };
 
-export const AddDepartmentModal: React.FC<Props> = ({ isOpen, onClose  }) => {
+export const AddDepartmentModal: React.FC<Props> = ({ isOpen, onClose, onDepartmentAdded }) => {
   const [name, setName] = useState('');
-    const company = useAppSelector(companyInfoSelector); 
-    const token = localStorage.getItem('token');
-    const companyId = company.id;
- 
+  const company = useAppSelector(companyInfoSelector); 
+  const token = localStorage.getItem('token');
+  const companyId = company.id;
+
   const addDepartment = async () => {
-    
     try {
       const response = await axios.post(
         `https://apiwithdb-u82g.onrender.com/company/${companyId}/departments`,
-        {name},
+        { name },
         {
           headers: {
             Authorization: `Bearer ${token}`, 
@@ -49,23 +49,27 @@ export const AddDepartmentModal: React.FC<Props> = ({ isOpen, onClose  }) => {
     }
   };
 
-  const handleAddClick = () => {
-    toast.promise(
-      addDepartment(),
-      {
-        pending: "Запрос обрабатывается",
-        success: "Отдел создан",
-        error: {
-          render({ data }) {
-            const errorResponse = data as { response: { data: { error: string } } };
-            return errorResponse.response.data.error || "Произошла ошибка при регистрации.";
+  const handleAddClick = async () => {
+    try {
+      await toast.promise(
+        addDepartment(),
+        {
+          pending: "Запрос обрабатывается",
+          success: "Отдел создан",
+          error: {
+            render({ data }) {
+              const errorResponse = data as { response: { data: { error: string } } };
+              return errorResponse.response.data.error || "Произошла ошибка при регистрации.";
+            }
           }
         }
-      }
-    );
-    // onAddDepartment(departmentName);
-    setName('');
-    onClose();
+      );
+      onDepartmentAdded(); // Вызов колбэка для обновления отделов
+      setName('');
+      onClose();
+    } catch (e) {
+      // Обработка ошибки при необходимости
+    }
   };
 
   return (

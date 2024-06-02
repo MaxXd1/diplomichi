@@ -57,4 +57,5 @@ export default AuthSlice.reducer;
 export const StatusCodeSelector = (state: RootState) => state.auth.errors.statusCode;
 export const MessageSelector = (state: RootState) => state.auth.errors.message;
 export const userSelector = (state: RootState) => state.auth.user;
+export const userRole = (state: RootState) => state.auth.user.role;
 export const { setUser, setError } = AuthSlice.actions; 

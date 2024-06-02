@@ -7,6 +7,7 @@ import { Registration } from "@pages/registration/ui";
 import { GetCode } from "@pages/getCode/ui";
 import { PasswordRecovery } from "@pages/passwordRecovery/ui";
 import {  CreateCompany } from "@pages/createCompany/ui";
+import { AuthGuard } from "@pages/authGuard";
 
 function App() {
   return (
@@ -19,10 +20,15 @@ function App() {
           path="/login/forgot-password/recover-pass"
           element={<PasswordRecovery />}
         />
+      <Route path="/" element={<AuthGuard />}>
         <Route path="/createCompany" element={<CreateCompany/>} />
         <Route path="/main" element={<Main />} />
+      </Route>
       </Routes>
   );
 }
 
 export default App;
+
+
+

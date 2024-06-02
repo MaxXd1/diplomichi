@@ -10,6 +10,7 @@
     font-size: 30px ;
     font-weight: bold;
     text-align: center;
+    color: rgb(7, 43, 71);
 }
 .date_container{
     display: flex;

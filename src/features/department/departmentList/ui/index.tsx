@@ -1,16 +1,22 @@
+// DepartmentList.tsx
 import { useState, useEffect } from "react";
-import axios from "axios";
-import style from "./index.module.css";
 import { useAppSelector, useAppDispatch } from "@app/store/types";
 import { companyInfoSelector } from "@app/store/companyInfo";
 import { setSelectedDepartment, selectedDepartmentSelector } from "@app/store/selectedDepartmentSlice";
+import style from "./index.module.css";
+import { getDepartments } from "@shared/api/getDepartment";
 
 type Department = {
   id: number;
   name: string;
 };
 
-export const DepartmentList = () => {
+type DepartmentListProps = {
+  shouldRefetch: boolean;
+  onDepartmentsFetched: () => void;
+};
+
+export const DepartmentList: React.FC<DepartmentListProps> = ({ shouldRefetch, onDepartmentsFetched }) => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const company = useAppSelector(companyInfoSelector); 
   const selectedDepartment = useAppSelector(selectedDepartmentSelector);
@@ -18,28 +24,27 @@ export const DepartmentList = () => {
   const companyId = company.id;
   const token = localStorage.getItem('token'); 
 
-  const getDepartments = async () => {
+  const fetchDepartments = async () => {
     try {
-      const response = await axios.get(`https://apiwithdb-u82g.onrender.com/company/${companyId}/departments`, {
-        headers: {
-          Authorization: `Bearer ${token}`, 
-        },
-      });
-      const formattedData = response.data.map((data: any) => ({
-        id: data.id,
-        name: data.name
-      }));
-      setDepartments(formattedData);
-    } catch (e) {
-      console.error("Error fetching departments", e);
+      const data = await getDepartments(companyId, token);
+      setDepartments(data);
+      onDepartmentsFetched();
+    } catch (error) {
+      console.error("Ошибка при получении отделов", error);
     }
   };
 
   useEffect(() => {
     if (companyId !== 0) {
-      getDepartments();
+      fetchDepartments();
     }
-  }, [companyId]);
+  }, [companyId, token]);
+
+  useEffect(() => {
+    if (shouldRefetch) {
+      fetchDepartments();
+    }
+  }, [shouldRefetch]);
 
   const handleDepartmentClick = (department: Department) => {
     dispatch(setSelectedDepartment(department));

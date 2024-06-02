@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { useAppSelector, useAppDispatch } from "@app/store/types";
-import { companyInfoSelector } from "@app/store/companyInfo";
-import { selectedDepartmentSelector } from "@app/store/selectedDepartmentSlice";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import { useAppSelector, useAppDispatch } from '@app/store/types';
+import { companyInfoSelector } from '@app/store/companyInfo';
+import { selectedDepartmentSelector } from '@app/store/selectedDepartmentSlice';
+import { getEmployees } from '@shared/api/getEmployees';
 import {
   Table,
   TableBody,
@@ -12,9 +12,10 @@ import {
   TableRow,
   Paper,
   TableSortLabel,
-} from "@mui/material";
-import { setEmployee } from "@app/store/employeeSlice";
+} from '@mui/material';
+import { setEmployee } from '@app/store/employeeSlice';
 import style from './index.module.css';
+import { ProfileInfoModal } from '@features/profileInfoModal/ui';
 
 type Employee = {
   id: number;
@@ -30,79 +31,64 @@ type Employee = {
 
 export const GeneralInfoTable = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof Employee;
-    direction: "asc" | "desc" | undefined;
-  }>({ key: "lastName", direction: undefined });
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
-    null
-  );
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Employee; direction: 'asc' | 'desc' | undefined }>({
+    key: 'lastName',
+    direction: undefined,
+  });
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const company = useAppSelector(companyInfoSelector);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const companyId = company.id;
   const department = useAppSelector(selectedDepartmentSelector);
   const departmentId = department.selectedDepartmentId;
   const dispatch = useAppDispatch();
 
-  const getEmployees = async () => {
-    try {
-      const response = await axios.get(
-        `https://apiwithdb-u82g.onrender.com/company/${companyId}/departments/${departmentId}/employee`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const formattedData = response.data.data.map((data: any) => ({
-        id: data.id,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        employeePhoto: data.employeePhoto.split("\\").pop(),
-        login: data.login,
-        country: data.country,
-        phoneNumber: data.phoneNumber,
-        birthDate: data.birthDate,
-        position: data.position,
-      }));
-      setEmployees(formattedData);
-    } catch (e) {
-      console.error("Error fetching employees", e);
-    }
-  };
-
   useEffect(() => {
     if (departmentId !== null) {
-      getEmployees();
+      getEmployees(companyId, departmentId, token || '')
+        .then(setEmployees)
+        .catch((error) => {
+          console.error('Error fetching employees', error);
+        });
     }
-  }, [departmentId]);
+  }, [departmentId, companyId, token]);
 
   const handleSort = (key: keyof Employee) => {
-    let direction: "asc" | "desc" | undefined = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    } else if (sortConfig.key === key && sortConfig.direction === "desc") {
+    let direction: 'asc' | 'desc' | undefined = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    } else if (sortConfig.key === key && sortConfig.direction === 'desc') {
       direction = undefined;
     }
     setSortConfig({ key, direction });
   };
 
   const sortedEmployees = [...employees].sort((a, b) => {
-    if (sortConfig.direction === undefined) {
+    if (!sortConfig.direction) {
       return 0;
     }
     if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === "asc" ? -1 : 1;
+      return sortConfig.direction === 'asc' ? -1 : 1;
     }
     if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === "asc" ? 1 : -1;
+      return sortConfig.direction === 'asc' ? 1 : -1;
     }
     return 0;
   });
 
   const handleEmployeeClick = (employee: Employee) => {
-    dispatch(setEmployee(employee));
     setSelectedEmployeeId(employee.id);
+    dispatch(setEmployee(employee));
+  };
+
+  const handleEmployeeDoubleClick = (employee: Employee) => {
+    handleEmployeeClick(employee);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -113,18 +99,18 @@ export const GeneralInfoTable = () => {
             <TableRow>
               <TableCell>
                 <TableSortLabel
-                  active={sortConfig.key === "firstName"}
+                  active={sortConfig.key === 'firstName'}
                   direction={sortConfig.direction}
-                  onClick={() => handleSort("firstName")}
+                  onClick={() => handleSort('firstName')}
                 >
                   Имя
                 </TableSortLabel>
               </TableCell>
               <TableCell>
                 <TableSortLabel
-                  active={sortConfig.key === "lastName"}
+                  active={sortConfig.key === 'lastName'}
                   direction={sortConfig.direction}
-                  onClick={() => handleSort("lastName")}
+                  onClick={() => handleSort('lastName')}
                 >
                   Фамилия
                 </TableSortLabel>
@@ -141,9 +127,8 @@ export const GeneralInfoTable = () => {
               <TableRow
                 key={employee.id}
                 onClick={() => handleEmployeeClick(employee)}
-                className={
-                  selectedEmployeeId === employee.id ? style.activeEmployee : ""
-                }
+                onDoubleClick={() => handleEmployeeDoubleClick(employee)}
+                className={selectedEmployeeId === employee.id ? style.activeEmployee : ''}
               >
                 <TableCell>{employee.firstName}</TableCell>
                 <TableCell>{employee.lastName}</TableCell>
@@ -151,15 +136,13 @@ export const GeneralInfoTable = () => {
                 <TableCell>{employee.login}</TableCell>
                 <TableCell>{employee.country}</TableCell>
                 <TableCell>{employee.phoneNumber}</TableCell>
-                <TableCell>
-                  {new Date(employee.birthDate).toLocaleDateString()}
-                </TableCell>
-                <TableCell></TableCell>
+                <TableCell>{new Date(employee.birthDate).toLocaleDateString()}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <ProfileInfoModal open={isModalOpen} handleClose={handleCloseModal} />
     </div>
   );
 };

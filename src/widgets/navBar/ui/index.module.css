@@ -1,45 +1,58 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
-.menu {
-    height: 55px;
-    display: flex;
-    justify-content: space-between;
-    background-color: rgb(7,43,71);
-    padding: 10px 20px;
-    text-align: center;
-    align-items: center;
-    color: rgb(251,255,255);
-    margin-bottom: 15px;
-  }
-  .border_img{
-    display: flex;
-    align-items: center;
-    margin-left: 100px;
 
-  }
-  .logo{
-    height: 45px;
-  }
-  .logo_text{
-    font-family: "IBM Plex Mono", monospace;
-    font-weight: 700;
-    font-style: normal;
-    font-size: 30px;
-    margin-left: 20px;
-  }
-  .list {
-    display: flex;
-    justify-content: space-between;
-    list-style: none;
-    align-items: center;
-  }
-  
-  .list_item {
-    margin-right: 25px;
-    font-size: 17px;
-    text-align: center;
-    font-family: Inter;
-    font-size: 17px ;
-    font-weight: bold;
-  }
-  
-  
+.menu {
+  height: 55px;
+  display: flex;
+  justify-content: space-between;
+  background-color: rgb(7, 43, 71);
+  padding: 10px 20px;
+  text-align: center;
+  align-items: center;
+  color: rgb(251, 255, 255);
+  margin-bottom: 15px;
+}
+
+.border_img {
+  display: flex;
+  align-items: center;
+  margin-left: 100px;
+}
+
+.logo {
+  height: 45px;
+}
+
+.logo_text {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 30px;
+  margin-left: 20px;
+}
+
+.list {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  align-items: center;
+}
+
+.list_item {
+  margin-right: 25px;
+  font-size: 17px;
+  text-align: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: bold;
+  cursor: pointer; 
+  transition: color 0.3s ease, transform 0.3s ease; 
+}
+
+.list_item:hover {
+  color: rgb(200, 200, 200); 
+  transform: scale(1.05); 
+}
+
+.list_item:active {
+  color: rgb(150, 150, 150); 
+  transform: scale(0.95); 
+}

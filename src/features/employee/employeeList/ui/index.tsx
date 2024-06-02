@@ -16,9 +16,6 @@ export const EmployeeList = () => {
     case "За день":
       list = <DailyInfoTable/>
       break;
-    case "За месяц":
-
-      break;
   }
 
   return (

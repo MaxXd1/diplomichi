@@ -9,8 +9,6 @@ import { selectedDepartmentSelector } from '@app/store/selectedDepartmentSlice';
 type TimeTrackingModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  employeeId: number;
-  onSave: (data: { dailyTimeWorked: string; recordDate: string }) => void;
 };
 
 const modalStyle = {
@@ -28,7 +26,6 @@ const modalStyle = {
 export const TimeWorkedModal: React.FC<TimeTrackingModalProps> = ({
   isOpen,
   onClose,
-  onSave,
 }) => {
   const [dailyTimeWorked, setDailyTimeWorked] = useState('');
   const [recordDate, setRecordDate] = useState('');
@@ -41,33 +38,51 @@ export const TimeWorkedModal: React.FC<TimeTrackingModalProps> = ({
   const department = useAppSelector(selectedDepartmentSelector);
   const departmentId = department.selectedDepartmentId;
 
-  const TimePost = async (data: { dailyTimeWorked: string; recordDate: string }) => {
+  const TimePost = async (dailyTimeWorked: string, recordDate: string) => {
     try {
       const response = await axios.post(
-        `https://apiwithdb-u82g.onrender.com/company/${companyId}/departments/${departmentId}/employee/${0}/attendance`,
-        data,
+        `https://apiwithdb-u82g.onrender.com/company/${companyId}/departments/${departmentId}/attendance`,
+        { dailyTimeWorked, recordDate },
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
         }
       );
+      console.log(response);
       return response.data;
     } catch (e: any) {
+      console.error('Ошибка при сохранении данных о времени работы', e);
       throw e;
     }
   };
 
   const handleSaveClick = async () => {
-    if (isDailyTimeWorkedValid && isRecordDateValid) {
-      const data = { dailyTimeWorked, recordDate };
-      try {
-        await TimePost(data);
-        onSave(data);
-        onClose();
-      } catch (error) {
-        console.error('Ошибка при сохранении данных о времени работы', error);
-      }
+    const timeWorkedPattern = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+    const isTimeWorkedValid = timeWorkedPattern.test(dailyTimeWorked);
+    const isDateValid = datePattern.test(recordDate);
+
+    setIsDailyTimeWorkedValid(isTimeWorkedValid);
+    setIsRecordDateValid(isDateValid);
+
+    if (!isTimeWorkedValid) {
+      console.error('Неверный формат времени работы');
+      return;
+    }
+
+    if (!isDateValid) {
+      console.error('Неверный формат даты');
+      return;
+    }
+
+    try {
+      await TimePost(dailyTimeWorked, recordDate);
+      onClose();
+    } catch (error) {
+      console.error('Ошибка при сохранении данных о времени работы', error);
     }
   };
 
@@ -84,7 +99,6 @@ export const TimeWorkedModal: React.FC<TimeTrackingModalProps> = ({
             placeholder="Время работы (HH:MM:SS)"
             setValue={setDailyTimeWorked}
             setValid={setIsDailyTimeWorkedValid}
-            isValidation={true}
           />
         </Box>
         <Box mt={2}>
@@ -94,14 +108,13 @@ export const TimeWorkedModal: React.FC<TimeTrackingModalProps> = ({
             placeholder="Дата (YYYY-MM-DD)"
             setValue={setRecordDate}
             setValid={setIsRecordDateValid}
-            isValidation={true}
           />
         </Box>
         <Box mt={2} display="flex" justifyContent="space-between">
           <Button onClick={onClose} color="primary" variant="contained">
             Отмена
           </Button>
-          <Button onClick={handleSaveClick} color="secondary" variant="contained">
+          <Button onClick={handleSaveClick} color="primary" variant="contained">
             Сохранить
           </Button>
         </Box>
